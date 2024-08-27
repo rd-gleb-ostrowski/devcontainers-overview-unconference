@@ -1,0 +1,28 @@
+{
+    "markdownlint.lintWorkspaceGlobs": [
+        "**/*.{md,mkd,mdwn,mdown,markdown,markdn,mdtxt,mdtext,workbook,qmd}",
+        "!**/bower_components",
+        "!**/node_modules",
+        "!**/vendor",
+        "!**/.git",
+    ],
+    "markdown.updateLinksOnFileMove.include": [
+        "**/*.{md,mkd,mdwn,mdown,markdown,markdn,mdtxt,mdtext,workbook,qmd}",
+        "**/*.{jpg,jpe,jpeg,png,bmp,gif,ico,webp,avif,tiff,svg,mp4}"
+    ],
+    "quarto.visualEditor.markdownWrap": "column",
+    "quarto.visualEditor.markdownWrapColumn": 100,
+    "quarto.visualEditor.spellingDictionary": "en_GB",
+    "editor.renderWhitespace": "all",
+    "editor.wordWrap": "wordWrapColumn",
+    "editor.wordWrapColumn": 100,
+    "cSpell.enableFiletypes": [
+        "quarto"
+    ],
+    "[quarto]": {
+        "files.trimTrailingWhitespace": false
+    },
+    "[markdown]": {
+        "files.trimTrailingWhitespace": false
+    }
+}

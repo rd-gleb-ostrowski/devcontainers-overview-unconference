@@ -1,0 +1,17 @@
+[Nn]otes.md
+.env
+
+/.quarto/
+/.out/
+/_book
+/_report
+*.glg
+*.glo
+*.gls
+*.ist
+*.lop
+*.html
+.idea
+_example
+plantuml.jar
+/*_files/

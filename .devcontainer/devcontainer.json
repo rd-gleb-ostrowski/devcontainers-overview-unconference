@@ -1,0 +1,28 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/markdown
+{
+	"name": "Devcontainer Overview Quarto Slides",
+	"image": "mcr.microsoft.com/devcontainers/base:bookworm",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"yzhang.markdown-all-in-one",
+				"streetsidesoftware.code-spell-checker",
+				"DavidAnson.vscode-markdownlint",
+				"shd101wyy.markdown-preview-enhanced",
+				"bierner.github-markdown-preview",
+				"EditorConfig.EditorConfig"
+			]
+		}
+	},
+	"features": {
+		"ghcr.io/rocker-org/devcontainer-features/quarto-cli:1": {
+			"installTinyTex": false,
+			"version": "latest"
+		}
+	}
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "uname -a",
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+}

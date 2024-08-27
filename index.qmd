@@ -1,0 +1,309 @@
+---
+title: To dev or not to dev
+subtitle: An overview of Microsoft's Dev Containers
+author: Stefan & Gleb
+institute: REWE Digital
+output: revealjs
+lang: en-GB
+date: last-modified
+date-format: long
+embed-resources: false
+csl: ieee-with-url.csl
+monofont: JetBrainsMono Nerd Font, JetBrains Mono, Fira Code, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace
+format:
+  revealjs:
+    theme: [black, custom.scss]
+    logo: assets/imgs/logo.svg
+    slide-number: c
+    center: false
+    toc: false
+    toc-title: Contents
+    toc-depth: 2
+    slide-level: 2
+    link-external-icon: true
+    link-external-newwindow: true
+    transition: slide
+    background-transition: slide
+    controls-layout: edges
+    controls-back-arrows: visible
+    numbers: true
+    chalkboard: true
+    smaller: false
+    scrollable: false
+    hash-type: title
+    center-title-slide: true
+    cap-location: top #revealjs seems not to care
+    multiplex: true
+---
+
+## Contents
+
+::: {.incremental}
+- [Motivation](#sec-motivation)
+- [Hello, Dev Container! (DEMO)](#sec-demo)
+- [Overview](#sec-overview)
+- [Editor support & tooling](#sec-editor-support)
+- [Dev containerize an existing project (LIVE)](#sec-demo2)
+- [The good, the bad, the alternatives](#sec-goodbadugly)
+:::
+
+::: notes
+Short, only half an hours, quickstart & 1, 2 pitfalls
+- Chat questions (:thumpsup:):
+  - I have never heard of dev containers before today.
+  - I know of dev containers/toyed with them/was an end-user.
+  - I use dev containers regularly.
+  - I moved past dev containers.
+:::
+
+# Question, question {.unnumbered .unlisted .hidden visibility="hidden"}
+
+- How does the git config get added to devcontainer?
+
+# Motivation {#sec-motivation}
+
+## Dev-what now? {#sec-why}
+
+::: {.incremental}
+- Easy onboarding
+- One-off contributions while keeping clean env
+- Works on _my_ machine
+- Isolation
+- ["structured metadata format"](https://containers.dev/overview)
+- Tools read based on spec and configure env
+:::
+
+::: footer
+[Containers.dev homepage](https://containers.dev)
+:::
+
+
+::: notes
+
+- Self-service easier with tooling set up
+- Format: tools can use to store any needed configuration required to develop inside of containerized coding.
+- Why do we care?
+- Why do we see potential?
+- What benefits/drawbacks (later->>) has it
+- Talk with participants: Why do YOU care?
+- Prerequisite: Functional docker environment
+:::
+
+# Hello, Dev Container! (DEMO) {#sec-demo}
+
+::: notes
+
+Stefan
+- PREP: Create new empty VS Code profile
+- Clone repo
+- Try to follow README
+- Install recommended Dev Containers extension
+- Reopen in Container (do not clone!)
+- Try again to follow README
+- Change some things
+- Try to commit via VS Code
+- Do `git status` in embedded Terminal (do not use `git st`)
+- Hand over to Gleb
+
+:::
+
+# Overview {#sec-overview}
+
+## Architecture {#sec-architecture}
+
+![VS Code Dev Container Architecture](assets/imgs/2-architecture-containers.png)
+
+::: footer
+[Source: Use the Dev Containers extension in Visual Studio Code](https://learn.microsoft.com/en-us/training/modules/use-docker-container-dev-env-vs-code/3-use-as-development-environment)
+:::
+
+## devcontainer.json {#sec-dev-json}
+
+```{.json #lst-smol-json lst-cap="Smol devcontainer.json"}
+{
+  "name": "Cool Name",
+  "image": "hot-image:coldest",
+  "customizations": { },
+  "features": { },
+  "postCreateCommand": "./build-it.sh",
+  "remoteUser": "celsius"
+}
+```
+
+::: {.incremental}
+- Dockerfile/compose instead of `image` possible
+- More lifecycle commands exists
+:::
+
+::: aside
+[Properties reference](https://containers.dev/implementors/json_reference/)
+:::
+
+## devcontainer.json: Customizations {#sec-customizations}
+
+```{.json #lst-customizations-json lst-cap="Customizations devcontainer.json field"}
+{
+"customizations": {
+    "vscode": {
+      "settings": {
+        "files.autoSave": "afterDelay",
+        "files.autoSaveDelay": 1000
+      },
+      "extensions": [
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  },
+}
+```
+
+Tools can define their own customizations
+
+::: notes
+- Codebspaces etc. have their own customizations
+:::
+
+## devcontainer.json: Features {#sec-features}
+
+```{.json #lst-features-json lst-cap="Features devcontainer.json field"}
+{
+"features": {
+    "ghcr.io/rocker-org/devcontainer-features/quarto-cli:1": {
+      "installTinyTex": true,
+      "version": "latest"
+    }
+  }
+}
+```
+
+::: aside
+[Crawled features list](https://containers.dev/features)  
+[Feature Reference Doc](https://containers.dev/implementors/features/)
+:::
+
+::: footer
+[Quarto-Cli feature source code](https://github.com/rocker-org/devcontainer-features/tree/main/src/quarto-cli)
+:::
+
+::: notes
+
+https://github.com/rocker-org/devcontainer-features/blob/main/src/quarto-cli/devcontainer-feature.json
+
+:::
+
+# Editor support & tooling {#sec-editor-support}
+
+## Visual Studio Code {#sec-vscode}
+
+::: {.incremental}
+- Primary supported editor via [Dev Container](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) Extension
+  - **Only when using Microsoft proprietary binary** (workarounds might exist)
+  - Nesting (e.g., Remote - SSH -> Dev Container on SSH server) supported
+- Local & Cloud (Github Codespaces, [Devpod](https://github.com/loft-sh/devpod), ...)
+- Best experience as of today
+:::
+
+## IntelliJ IDEA {#sec-idea}
+
+Still somewhat immature
+
+::: {.incremental}
+- Default Docker tool setting refers to `/usr/local/bin/docker`
+  - which is wrong on ARM MacBooks with Homebrew setup
+- Mac: Seems to have problems with `.ssh/config` using dedicated ssh key for remote operations
+- Mac: Seems to "cache that problem" somehow ...
+- Cloning changes mode from `rw-r--r--` to `rwxr-xr-x`
+  - thus all files are "changed"
+:::
+
+## Dev Containers CLI {#sec-cli}
+
+::: {.incremental}
+- Currently in development
+- Opt-in usage in VSCode extension
+- Editor agnostic management of dev containers
+- Prebuilding dev container images in CI
+- Execution of commands in container while adhering to `devcontainer.json`
+- Execution of lifecycle commands
+- `npm install -g @devcontainers/cli` 😿
+:::
+
+::: footer
+[Dev containers cli source](https://github.com/devcontainers/cli)
+:::
+
+::: notes
+  - Cannot stop or delete containers
+:::
+
+# Dev containerize an existing project (LIVE) {#sec-demo2}
+
+# The good, the bad and the alternatives {#sec-goodbadugly}
+
+## Feels good
+
+::: {.incremental}
+- Isolated environment
+  - Extra protection layer against malicious deps & extensions
+- "One-click" development environment
+- Tool-independent specification of dev env (in theory)
+- Low reqs for host 
+  - Container engine is basically standard nowadays
+  - Visual Studio Code is widely used
+- Lowers entry barrier
+:::
+
+
+## Feels bad
+
+::: {.incremental}
+- Containers are linux based, no Windows/Mac support
+- Isolated environment
+  - Your custom tools & environment is not in the container
+    - However, `~/.gitconfig` gets copied per default...
+    - ...which leads to problems, if custom tools, signing keys, etc. are defined there
+- Only Docker CLI supported out-of-the box
+- Complexity on top (especially if not working)
+:::
+
+::: notes
+
+- Clones vs mount on everything that is not Linux, performance considerations
+- Potentially higher storage requirements
+- It seems that ~/.gitconfig gets copied into the container
+  - Bad if it says `commit.gpgsign = true` and `user.signingkey` isn't available ...
+  - Or one uses a custom pager
+- Debugging containers vs. debugging
+- "Global" Devcontainer.json for user-specific features in the future?
+
+:::
+
+## Check this out
+
+::: {.incremental}
+- [Nix](https://nix.dev) (Flakes) and nix-shells; Nix based tools, e.g.:
+  - [Devenv](https://devenv.sh)
+  - [Devbox](https://www.jetify.com/devbox/)
+- Gradle-based build with automatic toolchain download
+- Python virtual environments
+:::
+
+::: notes
+- No sandbox isolation with nix afaik?
+- No endorsement for tools
+:::
+
+# Resources {#sec-resources .smaller}
+
+- [Development Containers Homepage](https://containers.dev/)
+  - [Crawled features list](https://containers.dev/features)
+  - [Crawled templates list](https://containers.dev/templates)
+  - [Properties reference](https://containers.dev/implementors/json_reference/)
+- [VS Code Documentation](https://code.visualstudio.com/docs/devcontainers/containers)
+- [IntelliJ IDEA Help](https://www.jetbrains.com/help/idea/connect-to-devcontainer.html)
+  - [Using Dev Containers in JetBrains IDEs – Part 1](https://blog.jetbrains.com/idea/2024/07/using-dev-containers-in-jetbrains-ides-part-1/)
+- [Kata Bootstrap Dev Containers with own customization property](https://github.com/rradczewski/kata-bootstraps)
+
+::: notes
+- Now let's talk!
+:::
